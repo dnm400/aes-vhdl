@@ -35,13 +35,16 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity allrounds is
-Port ( pall_i : in STD_LOGIC_VECTOR (127 downto 0);
-    keyall_i: in STD_LOGIC_VECTOR (127 downto 0);
+Port ( --pall_i : in STD_LOGIC_VECTOR (127 downto 0);
+   -- keyall_i: in STD_LOGIC_VECTOR (127 downto 0);
     cipherall_o : out STD_LOGIC_VECTOR (127 downto 0)
     );
 end allrounds;
 
 architecture Behavioral of allrounds is
+
+constant pall_i: STD_LOGIC_VECTOR(127 DOWNTO 0):= x"3243f6a8885a308d313198a2e0370734";
+constant keyall_i: STD_LOGIC_VECTOR(127 DOWNTO 0):=   x"2b7e151628aed2a6abf7158809cf4f3c";
 
 component subbytes is
 Port ( 
@@ -81,7 +84,9 @@ component aesfunctions is
 Port (  plaintext : in STD_LOGIC_VECTOR (127 downto 0);
     key: in STD_LOGIC_VECTOR (127 downto 0);
     ciphertext : out STD_LOGIC_VECTOR (127 downto 0);
-    RCont : in STD_LOGIC_VECTOR(31 downto 0)
+    RCont : in STD_LOGIC_VECTOR(31 downto 0);
+    keyout: out STD_LOGIC_VECTOR (127 downto 0)
+
     );
 end component;
 
@@ -100,7 +105,7 @@ signal Rcon : Rconarray := (
    x"36000000"
 );
 
-signal c0, c9, sub10_o, shift10_o, update10_o  : STD_LOGIC_VECTOR (127 downto 0);
+signal c0, c1,c2,c3,c4,c5,c6,c7,c8, c9, k1, k2,k3, k4, k5, k6, k7, k8, k9, sub10_o, shift10_o, update10_o  : STD_LOGIC_VECTOR (127 downto 0);
 type ninerounds is array (1 to 10) of std_logic_vector(127 downto 0);
 signal p_o, k_o: ninerounds; 
 begin 
@@ -109,19 +114,79 @@ r0: addroundkey port map(
     ptext => pall_i,
     key => keyall_i,
     ctext => c0);
+    
+r1: aesfunctions port map(
+    plaintext => c0 ,
+    key => keyall_i ,
+    ciphertext => c1,
+    Rcont => Rcon(0),
+    keyout =>k1 
+    );
+    
+r2: aesfunctions port map(
+    plaintext =>c1 ,
+    key =>k1 ,
+    ciphertext => c2,
+    Rcont => Rcon(1) ,
+    keyout =>k2
+     );    
 
-gen_rounds : for i in 1 to 9 generate
-begin
-    aes_gen: aesfunctions
-    Port map (
-                plaintext => p_o(i),
-                key => k_o(i),
-                ciphertext => p_o(i + 1),
-                RCont => RCon(i-1)
-            );
-end generate gen_rounds;
-c9 <= p_o(10);
-
+r3: aesfunctions port map(
+    plaintext => c2,
+    key =>k2 ,
+    ciphertext => c3 ,
+    Rcont => Rcon(2) ,
+    keyout =>k3
+    );
+    
+r4: aesfunctions port map(
+    plaintext => c3,
+    key =>k3 ,
+    ciphertext => c4 ,
+    Rcont => Rcon(3),
+    keyout =>k4
+    );
+    
+r5: aesfunctions port map(
+    plaintext =>c4 ,
+    key =>k4 ,
+    ciphertext => c5 ,
+    Rcont => Rcon(4) ,
+    keyout =>k5
+    );
+    
+r6: aesfunctions port map(
+    plaintext =>c5 ,
+    key => k5,
+    ciphertext => c6,
+    Rcont => Rcon(5) ,
+    keyout =>k6
+    );
+    
+r7: aesfunctions port map(
+    plaintext =>c6 ,
+    key =>k6 ,
+    ciphertext => c7 ,
+    Rcont => Rcon(6) ,
+    keyout =>k7
+    );
+    
+r8: aesfunctions port map(
+    plaintext => c7,
+    key => k7,
+    ciphertext => c8,
+    Rcont => Rcon(7),
+    keyout =>k8
+    );
+  
+r9: aesfunctions port map(
+    plaintext =>c8 ,
+    key =>k8 ,
+    ciphertext => c9,
+    Rcont => Rcon(8),
+    keyout =>k9
+    );
+    
 r10_sub: subbytes port map(
      sub_i => c9,
      sub_o => sub10_o);
@@ -138,7 +203,7 @@ r10_update: updatecipher port map(
  r10_add: addroundkey port map(
     ptext => shift10_o,
     key => update10_o,
-    ctext => update10_o);
+    ctext => cipherall_o);
     
 
 end Behavioral;
