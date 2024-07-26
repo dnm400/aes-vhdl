@@ -43,6 +43,8 @@ Port (
 end updatecipher;
 
 architecture Behavioral of updatecipher is
+--signal RCont : STD_LOGIC_VECTOR(31 downto 0) := x"01000000";
+--signal thekey : STD_LOGIC_VECTOR(127 downto 0) := x"2b7e151628aed2a6abf7158809cf4f3c";
 
 type sboxa is array (0 to 255) of std_logic_vector(7 downto 0);
 constant sbox : sboxa :=
@@ -80,8 +82,6 @@ constant sbox : sboxa :=
         x"8C", x"A1", x"89", x"0D", x"BF", x"E6", x"42", x"68", 
         x"41", x"99", x"2D", x"0F", x"B0", x"54", x"BB", x"16"
     ); 
-    constant i: integer := 0;
-signal tempkey : std_logic_vector(127 downto 0);
 signal v0, v1, v2, v3, v0u, v1u, v2u, v3u, rv3, s3 : std_logic_vector(31 downto 0);
 type svarray is array (0 to 3) of std_logic_vector(7 downto 0);
 signal sv: svarray; --array for implementation sbox to a vector
@@ -95,25 +95,35 @@ function rotword (
 end function;
 
 begin
-    process(thekey)
+    process
     begin
     v0 <= thekey(127 downto 96);
     v1 <= thekey(95 downto 64);
     v2 <= thekey(63 downto 32);
     v3 <= thekey(31 downto 0);
+    wait for 10 ns;
     rv3 <= rotword(v3);
+    wait for 10 ns;
     sv(0) <= rv3(31 downto 24);
     sv(1) <= rv3(23 downto 16);
     sv(2) <= rv3(15 downto 8);
     sv(3) <= rv3(7 downto 0);
+    wait for 10 ns;
     for i in 0 to 3 loop
         sv(i) <= sbox(to_integer(unsigned(sv(i))));
     end loop;
+    wait for 10 ns;
     s3 <= sv(0) & sv(1) & sv(2) & sv(3) ; --do not change v3(v3u uses the original v3)
+    wait for 10 ns;
     v0u <= v0 xor s3 xor RCont; --update Rcont every round 
+    wait for 10 ns;
     v1u <= v1 xor v0u;
+    wait for 10 ns;
     v2u <= v2 xor v1u;
+    wait for 10 ns;
     v3u <= v3 xor v2u;
+    wait for 10 ns;
     updatedkey <= v0u & v1u & v2u & v3u;
+    wait;
     end process;
 end Behavioral; 

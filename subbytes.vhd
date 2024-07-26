@@ -18,33 +18,21 @@
 -- 
 ----------------------------------------------------------------------------------
 
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_UNSIGNED;
-use IEEE.STD_LOGIC_ARITH;
 use IEEE.NUMERIC_STD.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
 entity subbytes is
-Port ( 
-    sub_i : in STD_LOGIC_VECTOR (127 downto 0);
-    sub_o : out STD_LOGIC_VECTOR (127 downto 0)   
+    Port (  sub_i: in STD_LOGIC_VECTOR(127 downto 0);
+        sub_o : out STD_LOGIC_VECTOR (127 downto 0)
     );
 end subbytes;
 
 architecture Behavioral of subbytes is
-type sboxa is array (0 to 255) of std_logic_vector(7 downto 0);
-constant sbox : sboxa :=
-(
+    --constant sub_i: STD_LOGIC_VECTOR(127 downto 0) := x"193de3bea0f4e22b9ac68d2ae9f84808";
+
+    type sboxa is array (0 to 255) of std_logic_vector(7 downto 0);
+    constant sbox : sboxa := (
         x"63", x"7C", x"77", x"7B", x"F2", x"6B", x"6F", x"C5", 
         x"30", x"01", x"67", x"2B", x"FE", x"D7", x"AB", x"76", 
         x"CA", x"82", x"C9", x"7D", x"FA", x"59", x"47", x"F0", 
@@ -78,38 +66,44 @@ constant sbox : sboxa :=
         x"8C", x"A1", x"89", x"0D", x"BF", x"E6", x"42", x"68", 
         x"41", x"99", x"2D", x"0F", x"B0", x"54", x"BB", x"16"
     ); 
-    constant i: integer := 0;
-    constant j: integer := 0;
+
     type matrix is array (0 to 3, 0 to 3) of std_logic_vector(7 downto 0);
     signal elements: matrix;
-begin
-process(sub_i)
-begin
-elements(0,0) <= sub_i(127 downto 120);
-elements(0,1) <= sub_i(119 downto 112);
-elements(0,2) <= sub_i(111 downto 104);
-elements(0,3) <= sub_i(103 downto 96);
-elements(1,0) <= sub_i(95 downto 88);
-elements(1,1) <= sub_i(87 downto 80);
-elements(1,2) <= sub_i(79 downto 72);
-elements(1,3) <= sub_i(71 downto 64);
-elements(2,0) <= sub_i(63 downto 56);
-elements(2,1) <= sub_i(55 downto 48);
-elements(2,2) <= sub_i(47 downto 40);
-elements(2,3) <= sub_i(39 downto 32);
-elements(3,0) <= sub_i(31 downto 24);
-elements(3,1) <= sub_i(23 downto 16);
-elements(3,2) <= sub_i(15 downto 8);
-elements(3,3) <= sub_i(7 downto 0);
-for i in 0 to 3 loop
-    for j in 0 to 3 loop
-    elements(i, j) <= sbox(to_integer(unsigned(elements(i, j))));
-    end loop;
-end loop; 
 
-sub_o <= elements(0,0)& elements(0,1)& elements(0,2)& elements(0,3) &
-         elements(1,0)& elements(1,1)& elements(1,2)& elements(1,3) &
-         elements(2,0)& elements(2,1)& elements(2,2)& elements(2,3) &
-         elements(3,0)& elements(3,1)& elements(3,2)& elements(3,3);
-end process;
+begin
+    process
+    begin
+        elements(0,0) <= sub_i(127 downto 120);
+        elements(0,1) <= sub_i(119 downto 112);
+        elements(0,2) <= sub_i(111 downto 104);
+        elements(0,3) <= sub_i(103 downto 96);
+        elements(1,0) <= sub_i(95 downto 88);
+        elements(1,1) <= sub_i(87 downto 80);
+        elements(1,2) <= sub_i(79 downto 72);
+        elements(1,3) <= sub_i(71 downto 64);
+        elements(2,0) <= sub_i(63 downto 56);
+        elements(2,1) <= sub_i(55 downto 48);
+        elements(2,2) <= sub_i(47 downto 40);
+        elements(2,3) <= sub_i(39 downto 32);
+        elements(3,0) <= sub_i(31 downto 24);
+        elements(3,1) <= sub_i(23 downto 16);
+        elements(3,2) <= sub_i(15 downto 8);
+        elements(3,3) <= sub_i(7 downto 0);
+
+        wait for 10 ns;
+
+        for i in 0 to 3 loop
+            for j in 0 to 3 loop
+                elements(i, j) <= sbox(to_integer(unsigned(elements(i, j))));
+            end loop;
+        end loop;
+
+        wait for 10 ns;
+
+        sub_o <= elements(0,0) & elements(0,1) & elements(0,2) & elements(0,3) &
+                 elements(1,0) & elements(1,1) & elements(1,2) & elements(1,3) &
+                 elements(2,0) & elements(2,1) & elements(2,2) & elements(2,3) &
+                 elements(3,0) & elements(3,1) & elements(3,2) & elements(3,3);
+        wait;
+    end process;
 end Behavioral;
