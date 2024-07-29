@@ -34,7 +34,8 @@ use IEEE.STD_LOGIC_ARITH;
 --use UNISIM.VComponents.all;
 
 entity mixcolumns is --for a vector
-Port (
+Port ( clk    : in STD_LOGIC;
+       rst    : in STD_LOGIC;
        mix_i : in STD_LOGIC_VECTOR (31 downto 0);
        mix_o : out STD_LOGIC_VECTOR (31 downto 0) );
 end mixcolumns;
@@ -42,6 +43,9 @@ end mixcolumns;
 architecture Behavioral of mixcolumns is
     --signal mix_i : STD_LOGIC_VECTOR (31 downto 0):= x"d4bf5d30";
     signal v0, v1, v2, v3, v0t, v1t, v2t, v3t: std_logic_vector(7 downto 0);
+    
+    type state_type is (IDLE, LOAD_INPUT, LOADED, OUTPUT_RESULT);
+    signal state: state_type := IDLE;
 
 function gfmul2(
         gf2_i : in STD_LOGIC_VECTOR(7 downto 0)) return STD_LOGIC_VECTOR is
@@ -64,20 +68,32 @@ begin
 end function;
 
 begin
-    process
+    process(clk,rst)
     begin
+  if rst = '1' then
+    mix_o <= (others => '0');
+    state <= IDLE;
+  elsif rising_edge(clk) then
+  case state is
+   when IDLE =>
+       state <= LOAD_INPUT;
+   when LOAD_INPUT =>
     v0 <= mix_i(31 downto 24);
     v1 <= mix_i(23 downto 16);
     v2 <= mix_i(15 downto 8);
     v3 <= mix_i(7 downto 0);
-    wait for 10 ns;
+    state <= LOADED;
+   when LOADED =>
     v0t <= gfmul2(v0) xor gfmul3(v1) xor v2 xor v3;
     v1t <= v0 xor gfmul2(v1) xor gfmul3(v2) xor v3;
     v2t <= v0 xor v1 xor gfmul2(v2) xor gfmul3(v3);
     v3t <= gfmul3(v0) xor v1 xor v2 xor gfmul2(v3);
-    wait for 10 ns;
+    state <= OUTPUT_RESULT ;
+    when OUTPUT_RESULT =>
     mix_o <= v0t & v1t & v2t & v3t;
-    wait;
+    state <= IDLE;
+    end case;
+    end if;
     end process;
 
 end Behavioral;

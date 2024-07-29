@@ -35,8 +35,10 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity allrounds is
-Port ( --pall_i : in STD_LOGIC_VECTOR (127 downto 0);
-   -- keyall_i: in STD_LOGIC_VECTOR (127 downto 0);
+Port (  clockk    :   in STD_LOGIC;      
+        resett    : in STD_LOGIC;
+    --pall_i : in STD_LOGIC_VECTOR (127 downto 0);
+   --keyall_i: in STD_LOGIC_VECTOR (127 downto 0);
     cipherall_o : out STD_LOGIC_VECTOR (127 downto 0)
     );
 end allrounds;
@@ -47,33 +49,32 @@ constant pall_i: STD_LOGIC_VECTOR(127 DOWNTO 0):= x"3243f6a8885a308d313198a2e037
 constant keyall_i: STD_LOGIC_VECTOR(127 DOWNTO 0):=   x"2b7e151628aed2a6abf7158809cf4f3c";
 
 component subbytes is
-Port ( 
+Port ( clk    : in STD_LOGIC;
+        rst    : in STD_LOGIC;
     sub_i : in STD_LOGIC_VECTOR (127 downto 0);
     sub_o : out STD_LOGIC_VECTOR (127 downto 0)   
     );
 end component;
 
 component shiftrows is
-    Port (  shifttext_i : in STD_LOGIC_VECTOR (127 downto 0);
+    Port (  clk    : in STD_LOGIC;
+            rst    : in STD_LOGIC;
+            shifttext_i : in STD_LOGIC_VECTOR (127 downto 0);
             shifttext_o : out STD_LOGIC_VECTOR (127 downto 0)
             );
 end component;
 
-component mixcolumns is --for a vector
-Port (
-       mix_i : in STD_LOGIC_VECTOR (31 downto 0);
-       mix_o : out STD_LOGIC_VECTOR (31 downto 0) );
-end component;
-
 component addroundkey is
-Port (
+Port (clk    : in STD_LOGIC;
+    rst    : in STD_LOGIC;
     ptext : in STD_LOGIC_VECTOR (127 downto 0);
     key: in STD_LOGIC_VECTOR (127 downto 0);
     ctext : out STD_LOGIC_VECTOR (127 downto 0)  );
 end component;
 
 component updatecipher is
-Port (
+Port (clk    : in STD_LOGIC;
+    rst    : in STD_LOGIC;
     thekey : in STD_LOGIC_VECTOR(127 downto 0);
     RCont : in STD_LOGIC_VECTOR(31 downto 0);
     updatedkey  : out STD_LOGIC_VECTOR(127 downto 0)
@@ -81,7 +82,10 @@ Port (
 end component;
 
 component aesfunctions is 
-Port (  plaintext : in STD_LOGIC_VECTOR (127 downto 0);
+Port (  
+    clkfn    : in STD_LOGIC;
+    rstfn  : in STD_LOGIC;
+    plaintext : in STD_LOGIC_VECTOR (127 downto 0);
     key: in STD_LOGIC_VECTOR (127 downto 0);
     ciphertext : out STD_LOGIC_VECTOR (127 downto 0);
     RCont : in STD_LOGIC_VECTOR(31 downto 0);
@@ -105,17 +109,21 @@ signal Rcon : Rconarray := (
    x"36000000"
 );
 
-signal c0, c1,c2,c3,c4,c5,c6,c7,c8, c9, k1, k2,k3, k4, k5, k6, k7, k8, k9, sub10_o, shift10_o, update10_o  : STD_LOGIC_VECTOR (127 downto 0);
+signal c0, c1,c2,c3,c4,c5,c6,c7,c8, c9, k1, k2,k3, k4, k5, k6, k7, k8, k9, sub10_o, shift10_o, update10_o  : STD_LOGIC_VECTOR (127 downto 0):= x"00000000000000000000000000000000";
 type ninerounds is array (1 to 10) of std_logic_vector(127 downto 0);
 signal p_o, k_o: ninerounds; 
 begin 
 
 r0: addroundkey port map(
+    clk => clockk ,
+    rst => resett,
     ptext => pall_i,
     key => keyall_i,
     ctext => c0);
     
 r1: aesfunctions port map(
+    clkfn => clockk ,
+     rstfn => resett,
     plaintext => c0 ,
     key => keyall_i ,
     ciphertext => c1,
@@ -124,6 +132,8 @@ r1: aesfunctions port map(
     );
     
 r2: aesfunctions port map(
+    clkfn => clockk ,
+     rstfn => resett,
     plaintext =>c1 ,
     key =>k1 ,
     ciphertext => c2,
@@ -132,6 +142,8 @@ r2: aesfunctions port map(
      );    
 
 r3: aesfunctions port map(
+    clkfn => clockk ,
+     rstfn => resett,
     plaintext => c2,
     key =>k2 ,
     ciphertext => c3 ,
@@ -140,6 +152,8 @@ r3: aesfunctions port map(
     );
     
 r4: aesfunctions port map(
+    clkfn => clockk ,
+     rstfn => resett,
     plaintext => c3,
     key =>k3 ,
     ciphertext => c4 ,
@@ -148,6 +162,8 @@ r4: aesfunctions port map(
     );
     
 r5: aesfunctions port map(
+    clkfn => clockk ,
+     rstfn => resett,
     plaintext =>c4 ,
     key =>k4 ,
     ciphertext => c5 ,
@@ -156,6 +172,8 @@ r5: aesfunctions port map(
     );
     
 r6: aesfunctions port map(
+    clkfn => clockk ,
+     rstfn => resett,
     plaintext =>c5 ,
     key => k5,
     ciphertext => c6,
@@ -164,6 +182,8 @@ r6: aesfunctions port map(
     );
     
 r7: aesfunctions port map(
+    clkfn => clockk ,
+     rstfn => resett,
     plaintext =>c6 ,
     key =>k6 ,
     ciphertext => c7 ,
@@ -172,6 +192,8 @@ r7: aesfunctions port map(
     );
     
 r8: aesfunctions port map(
+    clkfn => clockk ,
+    rstfn => resett,
     plaintext => c7,
     key => k7,
     ciphertext => c8,
@@ -180,6 +202,8 @@ r8: aesfunctions port map(
     );
   
 r9: aesfunctions port map(
+    clkfn => clockk ,
+     rstfn => resett,
     plaintext =>c8 ,
     key =>k8 ,
     ciphertext => c9,
@@ -188,22 +212,30 @@ r9: aesfunctions port map(
     );
     
 r10_sub: subbytes port map(
+     clk => clockk ,
+     rst => resett,
      sub_i => c9,
      sub_o => sub10_o);
 
 r10_shift: shiftrows port map(
+    clk => clockk ,
+    rst => resett,
     shifttext_i => sub10_o,
     shifttext_o => shift10_o);
 
 r10_update: updatecipher port map(
+    clk => clockk ,
+    rst => resett,
     thekey => k_o(9),
     Rcont => Rcon(9),
     updatedkey => update10_o);
  
  r10_add: addroundkey port map(
+    clk => clockk ,
+    rst => resett,
     ptext => shift10_o,
     key => update10_o,
     ctext => cipherall_o);
-    
+
 
 end Behavioral;

@@ -35,7 +35,8 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity updatecipher is
-Port (
+Port (clk    : in STD_LOGIC;
+    rst    : in STD_LOGIC;
     thekey : in STD_LOGIC_VECTOR(127 downto 0);
     RCont : in STD_LOGIC_VECTOR(31 downto 0);
     updatedkey  : out STD_LOGIC_VECTOR(127 downto 0)
@@ -85,6 +86,7 @@ constant sbox : sboxa :=
 signal v0, v1, v2, v3, v0u, v1u, v2u, v3u, rv3, s3 : std_logic_vector(31 downto 0);
 type svarray is array (0 to 3) of std_logic_vector(7 downto 0);
 signal sv: svarray; --array for implementation sbox to a vector
+signal step: integer := 0;
 
 function rotword ( 
     rotw_i : in STD_LOGIC_VECTOR (31 downto 0)) return STD_LOGIC_VECTOR is
@@ -95,35 +97,65 @@ function rotword (
 end function;
 
 begin
-    process
+    process(clk,rst)
     begin
+    if rst = '1' then 
+    updatedkey <= (others => '0');
+            v0 <= (others => '0');
+            v1 <= (others => '0');
+            v2 <= (others => '0');
+            v3 <= (others => '0');
+            rv3 <= (others => '0');
+            sv(0) <= (others => '0');
+            sv(1) <= (others => '0');
+            sv(2) <= (others => '0');
+            sv(3) <= (others => '0');
+            s3 <= (others => '0');
+            v0u <= (others => '0');
+            v1u <= (others => '0');
+            v2u <= (others => '0');
+            v3u <= (others => '0');
+            step <= 0;
+ elsif rising_edge(clk) then
+  case step is
+                when 0 =>
     v0 <= thekey(127 downto 96);
     v1 <= thekey(95 downto 64);
     v2 <= thekey(63 downto 32);
     v3 <= thekey(31 downto 0);
-    wait for 10 ns;
+    step <= 1;
+                when 1 =>
     rv3 <= rotword(v3);
-    wait for 10 ns;
+    step <= 2;
+                when 2=>    
     sv(0) <= rv3(31 downto 24);
     sv(1) <= rv3(23 downto 16);
     sv(2) <= rv3(15 downto 8);
     sv(3) <= rv3(7 downto 0);
-    wait for 10 ns;
+    step <= 3;
+                when 3=>    
     for i in 0 to 3 loop
         sv(i) <= sbox(to_integer(unsigned(sv(i))));
     end loop;
-    wait for 10 ns;
+    step <= 4;
+                when 4=>    
     s3 <= sv(0) & sv(1) & sv(2) & sv(3) ; --do not change v3(v3u uses the original v3)
-    wait for 10 ns;
+    step <= 5;
+                when 5=> 
     v0u <= v0 xor s3 xor RCont; --update Rcont every round 
-    wait for 10 ns;
+    step <= 6;
+                when 6=> 
     v1u <= v1 xor v0u;
-    wait for 10 ns;
+    step <= 7;
+                when 7=> 
     v2u <= v2 xor v1u;
-    wait for 10 ns;
+    step <= 8;
+                when 8=> 
     v3u <= v3 xor v2u;
-    wait for 10 ns;
+    step <= 9;
+                when 9=> 
     updatedkey <= v0u & v1u & v2u & v3u;
-    wait;
+    end case;
+    end if;
     end process;
 end Behavioral; 
