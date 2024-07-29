@@ -112,7 +112,19 @@ signal Rcon : Rconarray := (
 signal c0, c1,c2,c3,c4,c5,c6,c7,c8, c9, k1, k2,k3, k4, k5, k6, k7, k8, k9, sub10_o, shift10_o, update10_o  : STD_LOGIC_VECTOR (127 downto 0):= x"00000000000000000000000000000000";
 type ninerounds is array (1 to 10) of std_logic_vector(127 downto 0);
 signal p_o, k_o: ninerounds; 
+--signal clockk: std_logic := '0';
+
 begin 
+
+--clk_process : process
+--    begin
+--        while true loop
+--            clockk <= '0';
+--            wait for 100 ns;
+--            clockk <= '1';
+--            wait for 100 ns;
+--        end loop;
+--    end process;
 
 r0: addroundkey port map(
     clk => clockk ,
@@ -226,7 +238,7 @@ r10_shift: shiftrows port map(
 r10_update: updatecipher port map(
     clk => clockk ,
     rst => resett,
-    thekey => k_o(9),
+    thekey => k9,
     Rcont => Rcon(9),
     updatedkey => update10_o);
  

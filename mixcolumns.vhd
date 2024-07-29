@@ -73,7 +73,7 @@ begin
   if rst = '1' then
     mix_o <= (others => '0');
     state <= IDLE;
-  elsif rising_edge(clk) then
+  elsif clk = '1' then
   case state is
    when IDLE =>
        state <= LOAD_INPUT;

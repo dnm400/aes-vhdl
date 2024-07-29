@@ -44,12 +44,22 @@ end shiftrows;
 architecture Behavioral of shiftrows is
     --signal shifttext_i : STD_LOGIC_VECTOR (127 downto 0) := x"d42711aee0bf98f1b8b45de51e415230";
     signal s00, s01, s02, s03, s10, s11, s12, s13, s20, s21, s22, s23, s30,s31, s32, s33 : std_logic_vector(7 downto 0);
+    --signal clk : std_logic := '0';
 begin
+--    clk_process: process
+--    begin
+--    while true loop
+--        clk <= '0';
+--        wait for 10 ns;
+--        clk <= '1';
+--        wait for 10 ns;
+--     end loop;
+--     end process;
      process(clk, rst)
     begin
         if rst = '1' then
              shifttext_o <= (others => '0');
-    elsif rising_edge(clk) then       
+    elsif clk = '1' then       
     S00 <= shifttext_i(127 downto 120);
     S10 <= shifttext_i(119 downto 112);
     S20 <= shifttext_i(111 downto 104);

@@ -48,7 +48,7 @@ process(clk,rst)
 begin
 if rst = '1' then
              ctext <= (others => '0');
-    elsif rising_edge(clk) then       
+    elsif clk = '1' then       
     ctext <=  ptext xor key;
 end if;
 end process;

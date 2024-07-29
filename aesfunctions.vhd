@@ -12,7 +12,7 @@
 -- 
 -- Dependencies: 
 -- 
--- Revision:
+-- Revision: 
 -- Revision 0.01 - File Created
 -- Additional Comments:
 -- 
@@ -36,19 +36,19 @@ use IEEE.STD_LOGIC_ARITH;
 entity aesfunctions is --for 128-bit plaintext
 Port (  clkfn    : in STD_LOGIC;
         rstfn  : in STD_LOGIC;
-    plaintext : in STD_LOGIC_VECTOR (127 downto 0);
-    key: in STD_LOGIC_VECTOR (127 downto 0);
+  plaintext : in STD_LOGIC_VECTOR (127 downto 0);
+   key: in STD_LOGIC_VECTOR (127 downto 0);
     ciphertext : out STD_LOGIC_VECTOR (127 downto 0);
-    RCont : in STD_LOGIC_VECTOR(31 downto 0);
+   RCont : in STD_LOGIC_VECTOR(31 downto 0);
     keyout: out STD_LOGIC_VECTOR (127 downto 0)
     );
 end aesfunctions;
 
 architecture Behavioral of aesfunctions is
 
---signal plaintext :  STD_LOGIC_VECTOR (127 downto 0) := x"193de3bea0f4e22b9ac68d2ae9f84808";
---signal    key:  STD_LOGIC_VECTOR (127 downto 0) := x"2b7e151628aed2a6abf7158809cf4f3c";
---signal    RCont :  STD_LOGIC_VECTOR(31 downto 0) :=  x"01000000" ;
+--signal plaintext :  STD_LOGIC_VECTOR (127 downto 0) := x"a49c7ff2689f352b6b5bea43026a5049";
+--signal    key:  STD_LOGIC_VECTOR (127 downto 0) := x"a0fafe1788542cb123a339392a6c7605";
+--signal    RCont :  STD_LOGIC_VECTOR(31 downto 0) :=  x"02000000" ;
 
 component subbytes is
 Port ( clk    : in STD_LOGIC;
@@ -86,15 +86,27 @@ Port (
     clk    : in STD_LOGIC;
     rst    : in STD_LOGIC;
     thekey : in STD_LOGIC_VECTOR(127 downto 0);
-    RCont : in STD_LOGIC_VECTOR(31 downto 0);
+    RCont : in STD_LOGIC_VECTOR(31 downto 0); 
     updatedkey  : out STD_LOGIC_VECTOR(127 downto 0)
      );
 end component;
 
 signal sub_o, shift_o, mix_o, key_o: STD_LOGIC_VECTOR (127 downto 0);
 signal mixvec0, mixvec1, mixvec2, mixvec3, mixvec0_o, mixvec1_o, mixvec2_o, mixvec3_o: STD_LOGIC_VECTOR (31 downto 0);
+--signal clkfn: std_logic := '0';
 
 begin
+
+-- clk_process : process
+--    begin
+--        while true loop
+--            clkfn <= '0';
+--            wait for 10 ns;
+--            clkfn <= '1';
+--            wait for 10 ns;
+--        end loop;
+--    end process;
+    
 submodule: subbytes port map(
      clk => clkfn ,
      rst => rstfn,
@@ -114,7 +126,7 @@ shiftmodule: shiftrows port map(
             mixvec1 <= (others => '0');
             mixvec2 <= (others => '0');
             mixvec3 <= (others => '0');
-        elsif rising_edge(clkfn) then
+        elsif clkfn = '1' then
         mixvec0 <= shift_o(127 downto 96);
         mixvec1 <= shift_o(95 downto 64);
         mixvec2 <= shift_o(63 downto 32);
@@ -149,7 +161,7 @@ mix3: mixcolumns port map(
     
       process(clkfn)
     begin
-    if rising_edge(clkfn) then
+    if clkfn = '1' then
         mix_o <= mixvec0_o & mixvec1_o & mixvec2_o & mixvec3_o;
         end if; 
     end process;
