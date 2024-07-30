@@ -126,7 +126,7 @@ shiftmodule: shiftrows port map(
             mixvec1 <= (others => '0');
             mixvec2 <= (others => '0');
             mixvec3 <= (others => '0');
-        elsif clkfn = '1' then
+        elsif rising_edge(clkfn) then
         mixvec0 <= shift_o(127 downto 96);
         mixvec1 <= shift_o(95 downto 64);
         mixvec2 <= shift_o(63 downto 32);
@@ -161,7 +161,7 @@ mix3: mixcolumns port map(
     
       process(clkfn)
     begin
-    if clkfn = '1' then
+    if rising_edge(clkfn) then
         mix_o <= mixvec0_o & mixvec1_o & mixvec2_o & mixvec3_o;
         end if; 
     end process;

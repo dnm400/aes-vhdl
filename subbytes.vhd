@@ -67,12 +67,13 @@
             x"8C", x"A1", x"89", x"0D", x"BF", x"E6", x"42", x"68", 
             x"41", x"99", x"2D", x"0F", x"B0", x"54", x"BB", x"16"
         ); 
-    
-        type matrix is array (0 to 3, 0 to 3) of std_logic_vector(7 downto 0);
-        signal elements: matrix;
+        type elar is array (0 to 15) of std_logic_vector(7 downto 0);
+        signal elements: elar;
+--        type matrix is array (0 to 3, 0 to 3) of std_logic_vector(7 downto 0);
+--        signal elements: matrix;
     --    signal clk : std_logic := '0';
-        type state_type is (IDLE, LOAD_INPUT, SUB_BYTES, OUTPUT_RESULT);
-        signal state: state_type := IDLE;
+--        type state_type is (IDLE, LOAD_INPUT, SUB_BYTES, OUTPUT_RESULT);
+--        signal state: state_type := IDLE;
     begin
     
     --     clk_process : process
@@ -87,49 +88,85 @@
         process(clk, rst)
         begin
             if rst = '1' then
-                state <= IDLE;
+--                state <= IDLE;
                 sub_o <= (others => '0');
-                for i in 0 to 3 loop
-                            for j in 0 to 3 loop
-                                elements(i, j) <= (others => '0');
-                            end loop;
-                        end loop;
-            elsif  clk = '1' then
-                case state is
-                    when IDLE =>
-                        state <= LOAD_INPUT;
-                    when LOAD_INPUT =>
-                        elements(0,0) <= sub_i(127 downto 120);
-                        elements(0,1) <= sub_i(119 downto 112);
-                        elements(0,2) <= sub_i(111 downto 104);
-                        elements(0,3) <= sub_i(103 downto 96);
-                        elements(1,0) <= sub_i(95 downto 88);
-                        elements(1,1) <= sub_i(87 downto 80);
-                        elements(1,2) <= sub_i(79 downto 72);
-                        elements(1,3) <= sub_i(71 downto 64);
-                        elements(2,0) <= sub_i(63 downto 56);
-                        elements(2,1) <= sub_i(55 downto 48);
-                        elements(2,2) <= sub_i(47 downto 40);
-                        elements(2,3) <= sub_i(39 downto 32);
-                        elements(3,0) <= sub_i(31 downto 24);
-                        elements(3,1) <= sub_i(23 downto 16);
-                        elements(3,2) <= sub_i(15 downto 8);
-                        elements(3,3) <= sub_i(7 downto 0);
-                        state <= SUB_BYTES;
-                    when SUB_BYTES =>
-                        for i in 0 to 3 loop
-                            for j in 0 to 3 loop
-                                elements(i, j) <= sbox(to_integer(unsigned(elements(i, j))));
-                            end loop;
-                        end loop;
-                        state <= OUTPUT_RESULT;
-                    when OUTPUT_RESULT =>
-                        sub_o <= elements(0,0) & elements(0,1) & elements(0,2) & elements(0,3) &
-                                 elements(1,0) & elements(1,1) & elements(1,2) & elements(1,3) &
-                                 elements(2,0) & elements(2,1) & elements(2,2) & elements(2,3) &
-                                 elements(3,0) & elements(3,1) & elements(3,2) & elements(3,3);
-                        state <= IDLE;
-                end case;
+--                for i in 0 to 3 loop
+--                            for j in 0 to 3 loop
+                                elements(0) <= (others => '0');
+                                elements(1) <= (others => '0');
+                                elements(2) <= (others => '0');
+                                elements(3) <= (others => '0');
+                                elements(4) <= (others => '0');
+                                elements(5) <= (others => '0');
+                                elements(6) <= (others => '0');
+                                elements(7) <= (others => '0');
+                                elements(8) <= (others => '0');
+                                elements(9) <= (others => '0');
+                                elements(10) <= (others => '0');
+                                elements(11) <= (others => '0');
+                                elements(12) <= (others => '0');
+                                elements(13) <= (others => '0');
+                                elements(14) <= (others => '0');
+                                elements(15) <= (others => '0');
+                               
+--                            end loop;
+--                        end loop;
+            elsif  rising_edge(clk) then
+--                        state <= LOAD_INPUT;
+--                case state is
+--                    when IDLE =>
+--                        state <= LOAD_INPUT;
+--                    when LOAD_INPUT =>
+--                        elements(0,0) <= sub_i(127 downto 120);
+--                        elements(0,1) <= sub_i(119 downto 112);
+--                        elements(0,2) <= sub_i(111 downto 104);
+--                        elements(0,3) <= sub_i(103 downto 96);
+--                        elements(1,0) <= sub_i(95 downto 88);
+--                        elements(1,1) <= sub_i(87 downto 80);
+--                        elements(1,2) <= sub_i(79 downto 72);
+--                        elements(1,3) <= sub_i(71 downto 64);
+--                        elements(2,0) <= sub_i(63 downto 56);
+--                        elements(2,1) <= sub_i(55 downto 48);
+--                        elements(2,2) <= sub_i(47 downto 40);
+--                        elements(2,3) <= sub_i(39 downto 32);
+--                        elements(3,0) <= sub_i(31 downto 24);
+--                        elements(3,1) <= sub_i(23 downto 16);
+--                        elements(3,2) <= sub_i(15 downto 8);
+--                        elements(3,3) <= sub_i(7 downto 0);
+--                        state <= SUB_BYTES;
+--                    when SUB_BYTES =>
+--                        for i in 0 to 3 loop
+--                            for j in 0 to 3 loop
+--                                elements(i, j) <= sbox(to_integer(unsigned(elements(i, j))));
+--                            end loop;
+--                        end loop;
+--                       state <= OUTPUT_RESULT;
+--                    when OUTPUT_RESULT =>
+                                elements(0) <= sbox(to_integer(unsigned(sub_i(127 downto 120))));
+                                elements(1) <= sbox(to_integer(unsigned(sub_i(119 downto 112))));
+                                elements(2) <= sbox(to_integer(unsigned(sub_i(111 downto 104))));
+                                elements(3) <= sbox(to_integer(unsigned(sub_i(103 downto 96))));
+                                elements(4) <= sbox(to_integer(unsigned(sub_i(95 downto 88))));
+                                elements(5) <= sbox(to_integer(unsigned(sub_i(87 downto 80))));
+                                elements(6) <= sbox(to_integer(unsigned(sub_i(79 downto 72))));
+                                elements(7) <= sbox(to_integer(unsigned(sub_i(71 downto 64))));
+                                elements(8) <= sbox(to_integer(unsigned(sub_i(63 downto 56))));
+                                elements(9) <= sbox(to_integer(unsigned(sub_i(55 downto 48))));
+                                elements(10) <= sbox(to_integer(unsigned(sub_i(47 downto 40))));
+                                elements(11) <= sbox(to_integer(unsigned(sub_i(39 downto 32))));
+                                elements(12) <= sbox(to_integer(unsigned(sub_i(31 downto 24))));
+                                elements(13) <= sbox(to_integer(unsigned(sub_i(23 downto 16))));
+                                elements(14) <= sbox(to_integer(unsigned(sub_i(15 downto 8))));
+                                elements(15) <= sbox(to_integer(unsigned(sub_i(7 downto 0))));
+                               
+                               
+
+                        sub_o <= elements(0) & elements(1) & elements(2) & elements(3) &
+                                 elements(4) & elements(5) & elements(6) & elements(7) &
+                                 elements(8) & elements(9) & elements(10) & elements(11) &
+                                 elements(12) & elements(13) & elements(14) & elements(15);
+--                        state <= IDLE;
+--                end case;
             end if;
         end process;
     end Behavioral;

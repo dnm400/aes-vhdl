@@ -72,27 +72,21 @@ begin
     begin
   if rst = '1' then
     mix_o <= (others => '0');
-    state <= IDLE;
-  elsif clk = '1' then
-  case state is
-   when IDLE =>
-       state <= LOAD_INPUT;
-   when LOAD_INPUT =>
+    
+  elsif rising_edge(clk) then
+
     v0 <= mix_i(31 downto 24);
     v1 <= mix_i(23 downto 16);
     v2 <= mix_i(15 downto 8);
     v3 <= mix_i(7 downto 0);
-    state <= LOADED;
-   when LOADED =>
+
     v0t <= gfmul2(v0) xor gfmul3(v1) xor v2 xor v3;
     v1t <= v0 xor gfmul2(v1) xor gfmul3(v2) xor v3;
     v2t <= v0 xor v1 xor gfmul2(v2) xor gfmul3(v3);
     v3t <= gfmul3(v0) xor v1 xor v2 xor gfmul2(v3);
-    state <= OUTPUT_RESULT ;
-    when OUTPUT_RESULT =>
+
     mix_o <= v0t & v1t & v2t & v3t;
-    state <= IDLE;
-    end case;
+
     end if;
     end process;
 

@@ -59,7 +59,7 @@ begin
     begin
         if rst = '1' then
              shifttext_o <= (others => '0');
-    elsif clk = '1' then       
+    elsif rising_edge(clk) then       
     S00 <= shifttext_i(127 downto 120);
     S10 <= shifttext_i(119 downto 112);
     S20 <= shifttext_i(111 downto 104);
