@@ -23,8 +23,7 @@
     use IEEE.NUMERIC_STD.ALL;
     
     entity subbytes is
-        Port ( clk    : in STD_LOGIC;
-            rst    : in STD_LOGIC;
+        Port (
           sub_i: in STD_LOGIC_VECTOR(127 downto 0);
             sub_o : out STD_LOGIC_VECTOR (127 downto 0)
         );
@@ -85,33 +84,33 @@
     --            wait for 10 ns;
     --        end loop;
     --    end process;
-        process(clk, rst)
-        begin
-            if rst = '1' then
+--        process(clk, rst)
+--        begin
+--            if rst = '1' then
 --                state <= IDLE;
-                sub_o <= (others => '0');
+--                sub_o <= (others => '0');
 --                for i in 0 to 3 loop
 --                            for j in 0 to 3 loop
-                                elements(0) <= (others => '0');
-                                elements(1) <= (others => '0');
-                                elements(2) <= (others => '0');
-                                elements(3) <= (others => '0');
-                                elements(4) <= (others => '0');
-                                elements(5) <= (others => '0');
-                                elements(6) <= (others => '0');
-                                elements(7) <= (others => '0');
-                                elements(8) <= (others => '0');
-                                elements(9) <= (others => '0');
-                                elements(10) <= (others => '0');
-                                elements(11) <= (others => '0');
-                                elements(12) <= (others => '0');
-                                elements(13) <= (others => '0');
-                                elements(14) <= (others => '0');
-                                elements(15) <= (others => '0');
+--                                elements(0) <= (others => '0');
+--                                elements(1) <= (others => '0');
+--                                elements(2) <= (others => '0');
+--                                elements(3) <= (others => '0');
+--                                elements(4) <= (others => '0');
+--                                elements(5) <= (others => '0');
+--                                elements(6) <= (others => '0');
+--                                elements(7) <= (others => '0');
+--                                elements(8) <= (others => '0');
+--                                elements(9) <= (others => '0');
+--                                elements(10) <= (others => '0');
+--                                elements(11) <= (others => '0');
+--                                elements(12) <= (others => '0');
+--                                elements(13) <= (others => '0');
+--                                elements(14) <= (others => '0');
+--                                elements(15) <= (others => '0');
                                
 --                            end loop;
 --                        end loop;
-            elsif  rising_edge(clk) then
+--            elsif  rising_edge(clk) then
 --                        state <= LOAD_INPUT;
 --                case state is
 --                    when IDLE =>
@@ -167,7 +166,7 @@
                                  elements(12) & elements(13) & elements(14) & elements(15);
 --                        state <= IDLE;
 --                end case;
-            end if;
-        end process;
+--            end if;
+--        end process;
     end Behavioral;
     

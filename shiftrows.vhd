@@ -34,8 +34,7 @@ use IEEE.STD_LOGIC_ARITH;
 --use UNISIM.VComponents.all;
 
 entity shiftrows is
-    Port (  clk    : in STD_LOGIC;
-            rst    : in STD_LOGIC;
+    Port (
             shifttext_i : in STD_LOGIC_VECTOR (127 downto 0);
             shifttext_o : out STD_LOGIC_VECTOR (127 downto 0)
             );
@@ -52,15 +51,15 @@ begin
 --        clk <= '0';
 --        wait for 10 ns;
 --        clk <= '1';
---        wait for 10 ns;
+--        wait for 10 ns; 
 --     end loop;
 --     end process;
-     process(clk, rst)
-    begin
-        if rst = '1' then
-             shifttext_o <= (others => '0');
-    elsif rising_edge(clk) then       
-    S00 <= shifttext_i(127 downto 120);
+--     process(clk, rst)
+--    begin
+--        if rst = '1' then
+--             shifttext_o <= (others => '0');
+--    elsif rising_edge(clk) then       
+   S00 <= shifttext_i(127 downto 120);
     S10 <= shifttext_i(119 downto 112);
     S20 <= shifttext_i(111 downto 104);
     S30 <= shifttext_i(103 downto 96);
@@ -78,6 +77,6 @@ begin
     S33 <= shifttext_i(7 downto 0);
     
     shifttext_o <= s00 & s11 & s22 & s33 & s01 & s12 & s23 & s30 & s02 & s13 & s20 & s31 & s03 & s10 & s21 & s32 ;
-    end if;
-    end process;
+--    end if;
+--    end process;
 end Behavioral;

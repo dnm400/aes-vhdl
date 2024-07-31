@@ -34,8 +34,7 @@ use IEEE.STD_LOGIC_ARITH;
 --use UNISIM.VComponents.all;
 
 entity mixcolumns is --for a vector
-Port ( clk    : in STD_LOGIC;
-       rst    : in STD_LOGIC;
+Port (
        mix_i : in STD_LOGIC_VECTOR (31 downto 0);
        mix_o : out STD_LOGIC_VECTOR (31 downto 0) );
 end mixcolumns;
@@ -68,12 +67,12 @@ begin
 end function;
 
 begin
-    process(clk,rst)
-    begin
-  if rst = '1' then
-    mix_o <= (others => '0');
+--    process(clk,rst)
+--    begin
+--  if rst = '1' then
+--    mix_o <= (others => '0');
     
-  elsif rising_edge(clk) then
+--  elsif rising_edge(clk) then
 
     v0 <= mix_i(31 downto 24);
     v1 <= mix_i(23 downto 16);
@@ -87,7 +86,7 @@ begin
 
     mix_o <= v0t & v1t & v2t & v3t;
 
-    end if;
-    end process;
+--    end if;
+--    end process;
 
 end Behavioral;

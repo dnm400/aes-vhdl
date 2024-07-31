@@ -35,8 +35,7 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity updatecipher is
-Port (clk    : in STD_LOGIC;
-    rst    : in STD_LOGIC;
+Port (
     thekey : in STD_LOGIC_VECTOR(127 downto 0);
     RCont : in STD_LOGIC_VECTOR(31 downto 0);
     updatedkey  : out STD_LOGIC_VECTOR(127 downto 0)
@@ -107,22 +106,22 @@ begin
 --            wait for 10 ns;
 --        end loop;
 --    end process;
-    process(clk, rst)
-    begin
-        if rst = '1' then 
-            updatedkey <= (others => '0');
-            v0 <= (others => '0');
-            v1 <= (others => '0');
-            v2 <= (others => '0');
-            v3 <= (others => '0');
-            rv3 <= (others => '0');
-            sv <= (others => '0');
-            s3 <= (others => '0');
-            v0u <= (others => '0');
-            v1u <= (others => '0');
-            v2u <= (others => '0');
-            v3u <= (others => '0');
-        elsif rising_edge(clk) then
+--    process(clk, rst)
+--    begin
+--        if rst = '1' then 
+--            updatedkey <= (others => '0');
+--            v0 <= (others => '0');
+--            v1 <= (others => '0');
+--            v2 <= (others => '0');
+--            v3 <= (others => '0');
+--            rv3 <= (others => '0');
+--            sv <= (others => '0');
+--            s3 <= (others => '0');
+--            v0u <= (others => '0');
+--            v1u <= (others => '0');
+--            v2u <= (others => '0');
+--            v3u <= (others => '0');
+--        elsif rising_edge(clk) then
             v0 <= thekey(127 downto 96);
             v1 <= thekey(95 downto 64);
             v2 <= thekey(63 downto 32);
@@ -141,6 +140,6 @@ begin
             v3u <= v3 xor v2u;
             
             updatedkey <= v0u & v1u & v2u & v3u;
-        end if;
-    end process;
+--        end if;
+--    end process;
 end Behavioral;

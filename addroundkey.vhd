@@ -34,8 +34,7 @@ use IEEE.STD_LOGIC_ARITH;
 --use UNISIM.VComponents.all;
 
 entity addroundkey is
-Port (clk    : in STD_LOGIC;
-    rst    : in STD_LOGIC;
+Port (
     ptext : in STD_LOGIC_VECTOR (127 downto 0);
     key: in STD_LOGIC_VECTOR (127 downto 0);
     ctext : out STD_LOGIC_VECTOR (127 downto 0)  );
@@ -44,12 +43,7 @@ end addroundkey;
 architecture Behavioral of addroundkey is
 
 begin
-process(clk,rst)
-begin
-if rst = '1' then
-             ctext <= (others => '0');
-    elsif rising_edge(clk) then       
-    ctext <=  ptext xor key;
-end if;
-end process;
+    
+   ctext <=  ptext xor key;
+
 end Behavioral;
