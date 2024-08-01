@@ -115,35 +115,45 @@ begin
          if roundc = -1 then
             psignal <= pall_i;
             ksignal <= keyall_i; 
-          end if;
+            pmux <= pall_i;
+            kmux <= keyall_i;
+            cipherall_o <= pall_i;
+         elsif roundc = 0 then
+            pmux <= c0;
+            kmux <= keyall_i;
+            cipherall_o <= c0;
+         else 
+            pmux <= c_index;
+            kmux <= k_index;
+            cipherall_o <= c_index;
+         end if; 
          roundc <= roundc + 1;
          if roundc >= 0 then
             Rcont <= Rcon(roundc);
          end if;
-          cipherall_o <= c_index;
        elsif roundc = 10 then
          cipherall_o <= clastadd;
        end if;
     end if;
 end process;
 
-process(clockk)
-begin
-   if rising_edge(clockk) then
-    if roundc = -1 then
-          pmux <= pall_i;
-          kmux <= keyall_i;         
-    elsif roundc < 10 then
-      if roundc = 0 then
-          pmux <= c0;
-          kmux <= keyall_i;    
-      else  
-          pmux <= c_index;
-          kmux <= k_index;
-      end if;
-    end if;
-   end if;
-end process;
+--process(clockk)
+--begin
+--   if rising_edge(clockk) then
+--    if roundc = -1 then
+--          pmux <= pall_i;
+--          kmux <= keyall_i;         
+--    elsif roundc < 10 then
+--      if roundc = 0 then
+--          pmux <= c0;
+--          kmux <= keyall_i;    
+--      else  
+--          pmux <= c_index;
+--          kmux <= k_index;
+--      end if;
+--    end if;
+--   end if;
+--end process;
         
 r0: addroundkey port map(
     ptext => psignal,
