@@ -58,8 +58,8 @@ signal Rcon : Rconarray := (
 );
 
 
-signal psignal, ksignal, c0, ciphercount, keycount, clastadd, pmux, kmux, c_index, k_index, sub_o, shift_o, update_o: STD_LOGIC_VECTOR (127 downto 0):= (others => '0');
-signal roundc: integer range 0 to 10 := 0;
+signal psignal, ksignal, c0, clastadd, pmux, kmux, c_index, k_index, sub_o, shift_o, update_o: STD_LOGIC_VECTOR (127 downto 0):= (others => '0');
+signal roundc: integer range -1 to 10 := -1;
 signal Rcont: std_logic_vector(31 downto 0):= (others => '0');
 component aesfunctions is
 Port(
@@ -108,42 +108,56 @@ begin
         psignal <= (others => '0');
         ksignal <= (others => '0');
         cipherall_o <= (others => '0') ;
-        roundc <= 0;
+        roundc <= -1;
         Rcont <= Rcon(0);
     elsif rising_edge(clockk) then
        if roundc < 10 then
-         if roundc = 0 then
+         if roundc = -1 then
             psignal <= pall_i;
-            ksignal <= keyall_i;
+            ksignal <= keyall_i; 
           end if;
          roundc <= roundc + 1;
-         Rcont <= Rcon(roundc);
+         if roundc >= 0 then
+            Rcont <= Rcon(roundc);
+         end if;
+          cipherall_o <= c_index;
        elsif roundc = 10 then
          cipherall_o <= clastadd;
        end if;
     end if;
 end process;
 
-process(roundc)
+process(clockk)
 begin
-   if roundc = 0 then
-      pmux <= pall_i;
-    else
-      pmux <= c_index;
+   if rising_edge(clockk) then
+    if roundc = -1 then
+          pmux <= pall_i;
+          kmux <= keyall_i;         
+    elsif roundc < 10 then
+      if roundc = 0 then
+          pmux <= c0;
+          kmux <= keyall_i;    
+      else  
+          pmux <= c_index;
+          kmux <= k_index;
+      end if;
     end if;
-    if roundc = 0 then
-      kmux <= keyall_i;
-    else
-      kmux <= k_index;
-     end if;
+   end if;
 end process;
-
+        
 r0: addroundkey port map(
     ptext => psignal,
     key => ksignal,
     ctext => c0);
 
-
+--pmux <= (others => '0') when roundc = 0 else
+--        c0 when roundc = 1 else
+--        c_index ;
+        
+--kmux <= (others => '0') when roundc = 0 else
+--        ksignal when roundc = 1 else
+--        k_index;
+        
 countedrounds: aesfunctions port map(
     plaintext => pmux ,
     key => kmux ,
@@ -154,7 +168,7 @@ countedrounds: aesfunctions port map(
     
 lastsub:
 subbytes port map(
-     sub_i => c_index,
+     sub_i => pmux,
      sub_o => sub_o);
      
 lastshift: shiftrows port map(
@@ -162,7 +176,7 @@ lastshift: shiftrows port map(
     shifttext_o => shift_o);
 
 lastupdate: updatecipher port map( 
-    thekey => k_index,
+    thekey => kmux,
     Rcont => Rcont,
     updatedkey => update_o);
  
