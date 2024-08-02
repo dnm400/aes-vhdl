@@ -79,10 +79,10 @@ Port (
 end component;
 
 component shiftrows is
-    Port (
-            shifttext_i : in STD_LOGIC_VECTOR (127 downto 0);
-            shifttext_o : out STD_LOGIC_VECTOR (127 downto 0)
-            );
+Port (
+   shifttext_i : in STD_LOGIC_VECTOR (127 downto 0);
+   shifttext_o : out STD_LOGIC_VECTOR (127 downto 0)
+   );
 end component;
 
 component addroundkey is
@@ -104,12 +104,14 @@ end component;
 begin
 process(clockk, resett)
 begin
+
     if resett = '1' then
         psignal <= (others => '0');
         ksignal <= (others => '0');
         cipherall_o <= (others => '0') ;
         roundc <= -1;
         Rcont <= Rcon(0);
+        
     elsif rising_edge(clockk) then
        if roundc < 10 then
          if roundc = -1 then
@@ -190,7 +192,7 @@ lastupdate: updatecipher port map(
     Rcont => Rcont,
     updatedkey => update_o);
  
- lastadd: addroundkey port map(
+lastadd: addroundkey port map(
     ptext => shift_o,
     key => update_o,
     ctext => clastadd); 
